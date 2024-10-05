@@ -1,0 +1,17 @@
+body {
+    background-color: #f8f9fa;
+}
+#suggestions {
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid #ced4da;
+}
+.movie-item {
+    cursor: pointer;
+}
+.movie-item:hover {
+    background-color: #f1f1f1;
+}
