@@ -46,7 +46,7 @@
     <script>
         $(document).ready(function() {
             let originalPosterSrc = '';
-
+    
             $('#movieSearch').on('input', function() {
                 let title = $(this).val();
                 if (title.length > 2) {
@@ -60,7 +60,7 @@
                     $('#suggestions').empty().hide();
                 }
             });
-
+    
             $(document).on('click', '.movie-item', function() {
                 let movieInfo = $(this).text().match(/(.*) \((\d{4})\)/);
                 let movieTitle = movieInfo[1];
@@ -74,14 +74,7 @@
                         $('#movieYear').text('Year: ' + movieYear);
                         $('#movieRating').text('IMDb Rating: ' + (data.rating || 'N/A'));
                         $('#posterContainer').show();
-                        $('#downloadButton').show().off('click').on('click', function() {
-                            let link = document.createElement('a');
-                            link.href = $('#poster').attr('src');
-                            link.download = movieTitle + '.jpg';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                        });
+                        $('#downloadButton').show();
                     } else {
                         alert('Poster not found!');
                     }
@@ -90,32 +83,45 @@
                 $('#suggestions').empty().hide();
                 $('#movieSearch').val(movieTitle);
             });
-
-            $('#searchButton').on('click', function() {
-                let title = $('#movieSearch').val();
-                if (title.length > 2) {
-                    $.get('/search', { title: title }, function(data) {
-                        if (data.length > 0) {
-                            $('.movie-item:first').click();
-                        } else {
-                            alert('No movies found!');
-                        }
+    
+            // Update poster source based on selected resolution
+            $('#resolutionSelect').on('change', function() {
+                const selectedSize = $(this).val();  // Get selected size
+    
+                // Update the poster source based on the resolution
+                if (originalPosterSrc) {
+                    let newSrc = originalPosterSrc.replace(/(SX|L|XL)(\d+)/g, function(match, prefix) {
+                        // Log what is matched
+                        console.log('Matched:', match, 'with prefix:', prefix);
+                        // Replace the number with the corresponding size
+                        return prefix + (selectedSize === '100p' ? '300' : (selectedSize === '300p' ? '300' : '400'));
                     });
+    
+                    console.log('Updated poster source:', newSrc); // Debugging line
+                    $('#poster').attr('src', newSrc);  // Update the image displayed
                 }
             });
-
-            $('#resolutionSlider').on('input', function() {
-                let resolution = $(this).val();
-                $('#resolutionValue').text(resolution + '%');
-                
-                if (originalPosterSrc) {
-                    let newSrc = originalPosterSrc.replace(/\.(jpg|jpeg|png|gif)$/, function(match) {
-                        return '_' + resolution + 'p' + match;
-                    });
-                    $('#poster').attr('src', newSrc);
-                }
+    
+            // Directly download the adjusted size
+            $('#downloadButton').on('click', function() {
+                let link = document.createElement('a');
+                const selectedSize = $('#resolutionSelect').val(); // Get the selected size
+    
+                // Construct the download URL based on the selected resolution
+                let downloadSrc = originalPosterSrc.replace(/(SX|L|XL)(\d+)/g, function(match, prefix) {
+                    // Log what is matched
+                    console.log('Matched for download:', match, 'with prefix:', prefix);
+                    // Replace the number with the corresponding size
+                    return prefix + (selectedSize === '100p' ? '300' : (selectedSize === '300p' ? '300' : '400'));
+                });
+    
+                console.log('Downloading from URL:', downloadSrc); // Log for debugging
+    
+                link.href = downloadSrc; // Set the link to the image source
+                link.setAttribute('download', $('#movieTitle').text() + '.jpg');  // Set the download name
+                document.body.appendChild(link);
+                link.click(); // Trigger the download
+                document.body.removeChild(link); // Clean up
             });
         });
     </script>
-</body>
-</html>
