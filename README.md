@@ -1,6 +1,6 @@
 # Posterfy
 
-![Posterfy Logo](https://github.com/yesenvidnath/Posterfy/blob/main/static/img/Posterfy.png)  <!-- Optional: Add a logo if you have one -->
+![Posterfy Logo](https://ibb.co/BnXWCs2)  <!-- Optional: Add a logo if you have one -->
 
 ## Overview
 
